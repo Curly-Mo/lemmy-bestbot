@@ -1,5 +1,5 @@
-import LemmyBot from 'lemmy-bot';
-import { Youtube } from './youtube';
+import lemmybot from 'lemmy-bot';
+import { Youtube } from './youtube.js';
 import { config } from 'dotenv';
 
 config();
@@ -7,9 +7,10 @@ config();
 const { LEMMY_INSTANCE, LEMMY_USERNAME_OR_EMAIL, LEMMY_PASSWORD, COMMUNITY } =
   process.env as Record<string, string>;
 
-const youtube = new Youtube();
+export const youtube = new Youtube();
+// const youtube = Youtube.create();
 
-export const bestbot = new LemmyBot({
+export const bestbot = new lemmybot.LemmyBot({
   // Pass configuration options here
   instance: LEMMY_INSTANCE,
   credentials: {
@@ -27,11 +28,15 @@ export const bestbot = new LemmyBot({
   },
   handlers: {
     post: (res) => {
-      console.log(res.postView.post.name);
-      console.log(res.postView.post.url);
-      console.log(res.postView.post.id);
-      youtube.updatePlaylist([res.postView.post.url])
+      // console.log(res.postView.post.name);
+      // console.log(res.postView.post.url);
+      // console.log(res.postView.post.id);
+      // youtube.updatePlaylist([res.postView.post.url])
+      if(youtube.auth !== undefined) {
+        youtube.test([res.postView.post.url])
+      }
     }
   },
   markAsBot: false,
 });
+

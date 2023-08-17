@@ -1,7 +1,15 @@
 {
   "compilerOptions": {
+    "target": "es2022",
     "esModuleInterop": true,
-    "module": "CommonJS"
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "outDir": "./dist",
+    "rootDir": "./src"
   },
-  "moduleResolution": "Node"
+  "exclude": ["dist", "node_modules"],
+  "ts-node": {
+      "esm": true
+  },
+  "lib": ["esnext"]
 }
