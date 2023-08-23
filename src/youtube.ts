@@ -78,6 +78,9 @@ export class Youtube {
   readonly tokenDir: string;
   readonly tokenPath: string;
   readonly credentials: {client_id: string; client_secret: string; redirect_uris: string[];};
+  readonly youtubeRegex = new RegExp(
+    '(?:youtube\\.com\\/(?:[^\\/]+\\/.+\\/|(?:v|e(?:mbed)?)\\/|.*[?&]v=)|youtu\\.be\\/)([^"&?\\/ ]{11})'
+  );
   youtube: youtube_v3.Youtube;
   auth: OAuth2Client;
   constructor() { // interval: Interval) {
@@ -169,79 +172,74 @@ export class Youtube {
   //   })();
   // }
 
-  test(videos: string[]): void {
-    // this.youtube.playlists.list({id: ['PLHwBlZp_DJfmuZceDJJsIVbal9JO_hteM'], part: ['snippet']}, (err, response) => {
-    //   console.log("err: ", err);
-    //   console.log("response: ", response);
-    //   console.log("items: ", response.data.items);
-    //   console.log("item_id: ", response.data.items.at(0).id);
-    //   console.log("item_detail: ", response.data.items.at(0).contentDetails);
-    //   console.log("items_kind: ", response.data.items.at(0).kind);
-    //   console.log("items_snippet: ", response.data.items.at(0).snippet);
-    //   console.log("items_status: ", response.data.items.at(0).status);
-    // });
+  // test(videos: string[]): void {
+  //   // this.youtube.playlists.list({id: ['PLHwBlZp_DJfmuZceDJJsIVbal9JO_hteM'], part: ['snippet']}, (err, response) => {
+  //   //   console.log("err: ", err);
+  //   //   console.log("response: ", response);
+  //   //   console.log("items: ", response.data.items);
+  //   //   console.log("item_id: ", response.data.items.at(0).id);
+  //   //   console.log("item_detail: ", response.data.items.at(0).contentDetails);
+  //   //   console.log("items_kind: ", response.data.items.at(0).kind);
+  //   //   console.log("items_snippet: ", response.data.items.at(0).snippet);
+  //   //   console.log("items_status: ", response.data.items.at(0).status);
+  //   // });
 
-    // this.youtube.playlists.insert({auth: this.auth, part: ['snippet'], requestBody: {snippet: {title: "coolcoolcool", description: "rad"}}}, (err, response) => {
-    //   console.log("err: ", err);
-    //   console.log("response: ", response);
-    // });
-
-
-    this.youtube.playlists.insert(
-    { auth: this.auth, access_token: this.auth.credentials.access_token,
-      part: ['snippet', 'status'],
-      requestBody: {
-        snippet: {
-            title: "hello",
-            description: "description"
-        },
-        status: {
-            privacyStatus: "private"
-        }
-      }
-    }, (err, response) => {
-      console.log("err: ", err);
-      console.log("response: ", response);
-    });
+  //   // this.youtube.playlists.insert({auth: this.auth, part: ['snippet'], requestBody: {snippet: {title: "coolcoolcool", description: "rad"}}}, (err, response) => {
+  //   //   console.log("err: ", err);
+  //   //   console.log("response: ", response);
+  //   // });
 
 
-    // this.youtube.playlistItems.insert(
-    // { auth: this.auth, part: ['snippet', 'status'], requestBody: 
-    // {
-    //   snippet: {
-    //       title: "hello",
-    //       description: "description"
-    //   },
-    //   status: {
-    //       privacyStatus: "private"
-    //   }
-    // }}, (err, response) => {
-    //   console.log("err: ", err);
-    //   console.log("response: ", response);
-    // });
+  //   // this.youtube.playlists.insert(
+  //   // { auth: this.auth, access_token: this.auth.credentials.access_token,
+  //   //   part: ['snippet', 'status'],
+  //   //   requestBody: {
+  //   //     snippet: {
+  //   //       title: "hello",
+  //   //       description: "description"
+  //   //     },
+  //   //     status: {
+  //   //       privacyStatus: "private"
+  //   //     }
+  //   //   }
+  //   // }, (err, response) => {
+  //   //   console.log("err: ", err);
+  //   //   console.log("response: ", response);
+  //   // });
 
-    // const playlists = YouTube.Playlists.list('id,snippet', {
-    //   mine: true,
-    // });
-    // let playlist = playlists.items.find(
-    //   (p) => p.snippet.title === this.playlistTitle
-    // );
 
-    // if (playlist === undefined) {
-    //   playlist = this.createPlaylist();
-    // }
-    // // } else {
-    // //   playlist = this.recreatePlaylist(playlist.id);
-    // // }
+  //   console.info("videos: ", videos);
+  //   videos.forEach((video) => {
+  //     console.info("video: ", video);
+  //     try {
+  //       this.addVideoToPlaylist("PLHwBlZp_DJfnU1KAem7IYHDNXjVmIxAlv", video);
+  //     } catch (e) {
+  //       console.log(e);
+  //     }
+  //   });
 
-    // videos.forEach((video) => {
-    //   try {
-    //     this.addVideoToPlaylist(playlist.id, video);
-    //   } catch (e) {
-    //     Logger.log(e);
-    //   }
-    // });
-  }
+  //   // const playlists = YouTube.Playlists.list('id,snippet', {
+  //   //   mine: true,
+  //   // });
+  //   // let playlist = playlists.items.find(
+  //   //   (p) => p.snippet.title === this.playlistTitle
+  //   // );
+
+  //   // if (playlist === undefined) {
+  //   //   playlist = this.createPlaylist();
+  //   // }
+  //   // // } else {
+  //   // //   playlist = this.recreatePlaylist(playlist.id);
+  //   // // }
+
+  //   // videos.forEach((video) => {
+  //   //   try {
+  //   //     this.addVideoToPlaylist(playlist.id, video);
+  //   //   } catch (e) {
+  //   //     Logger.log(e);
+  //   //   }
+  //   // });
+  // }
 
   // updatePlaylist(videos: string[]): void {
   //   const playlists = YouTube.Playlists.list('id,snippet', {
@@ -302,6 +300,84 @@ export class Youtube {
   //     'snippet'
   //   );
   // }
+
+  addVideoToPlaylistNoDupes(playlistId: string, videoUrl: string, callback): void {
+    if(!this.youtubeRegex.test(videoUrl)) {
+      console.warn("Can't add invalid youtube video url: ", videoUrl);
+    }
+    let videoId = this.youtubeRegex.exec(videoUrl)[1];
+
+    this.getPlaylistContents(playlistId, (itemsError, itemsResponse) => {
+      if(itemsError) {
+        callback(itemsError, itemsResponse);
+      } else {
+        // const itemsList = itemsResponse.data.items.map(item => item.contentDetails.videoId);
+        const items = new Set(itemsResponse.data.items.map(item => item.contentDetails.videoId));
+        // console.info("itemList: ", itemsList);
+        // console.info("items: ", items);
+        // console.info("videoUrl: ", videoUrl);
+        // console.info("videoId: ", videoId);
+        if(!items.has(videoId)) {
+          this.addVideoToPlaylist(playlistId, videoUrl, (err, response) => {
+            callback(err, response);
+            // console.log("contents: ", response.data.items);
+          });
+        } else {
+          console.info("already in playlist: ", videoUrl);
+          callback(null, null);
+        }
+      }
+    });
+  }
+
+  addVideoToPlaylist(playlistId: string, videoUrl: string, callback): void {
+    if(!this.youtubeRegex.test(videoUrl)) {
+      console.warn("Can't add invalid youtube video url: ", videoUrl);
+    }
+    let videoId = this.youtubeRegex.exec(videoUrl)[1];
+
+    this.youtube.playlistItems.insert(
+    { auth: this.auth, part: ['snippet'], requestBody: 
+    {
+      snippet: {
+        playlistId: playlistId,
+        resourceId: {
+          kind: 'youtube#video',
+          videoId: videoId,
+        },
+      },
+    }}, callback);
+    // (err, response) => {
+    //   // console.warn("err: ", err);
+    //   // console.log("response: ", response);
+    //   callback(err, response);
+    // });
+  }
+
+  getPlaylistContents(playlistId: string, callback): void {
+    this.youtube.playlistItems.list({playlistId: playlistId, part: ['contentDetails'], maxResults: 5000}, (err, response) => {
+      // console.warn("err: ", err);
+      // console.info("items: ", response.items);
+      callback(err, response);
+    });
+
+  }
+
+  /** check if the url is a youtube video **/
+  isYoutubeUrl(url: string): boolean {
+    const urlObj = new URL(url);
+    if (
+        urlObj.hostname.endsWith(".youtube.com") ||
+        urlObj.hostname === "youtube.com" ||
+        urlObj.hostname === "youtube-nocookie.com" ||
+        urlObj.hostname === "youtu.be"
+    ) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
 
   // /**
   //  * Create an OAuth2 client with the given credentials, and then execute the
@@ -379,7 +455,7 @@ export class Youtube {
       rl.close();
       oauth2Client.getToken(code, (err, token) => {
         if (err) {
-          console.log('Error while trying to retrieve access token', err);
+          console.warn('Error while trying to retrieve access token', err);
           return;
         }
         console.log('token: ', token);

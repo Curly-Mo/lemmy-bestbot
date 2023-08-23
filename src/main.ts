@@ -1,4 +1,4 @@
-import { bestbot, youtube } from './bot.js';
+import { bestbot } from './bot.js';
 
 // declare const global: {
 //   [x: string]: any;
