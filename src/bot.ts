@@ -100,7 +100,7 @@ export const bestbot: BestBot = new BestBot({
         reprocess
       }) => {
         // console.info("semaphore1: ", BestBot.postSemaphore);
-        if (postView.counts.score > 20) {
+        if (postView.counts.score > 24) {
           const publishedTimestamp = new Date(postView.post.published);
           const now = new Date();
           const anchor = 1680000000000
