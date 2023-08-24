@@ -64,8 +64,8 @@ export const bestbot: BestBot = new BestBot({
     username: LEMMY_USERNAME_OR_EMAIL,
     password: LEMMY_PASSWORD,
   },
-  // dbFile: 'db.sqlite3',
-  // federation: 'local',
+  dbFile: 'db.sqlite3',
+  federation: 'local',
   // federation: {
   //   allowList: [
   //     {
@@ -74,14 +74,14 @@ export const bestbot: BestBot = new BestBot({
   //     },
   //   ],
   // },
-  federation: {
-    allowList: [
-      {
-        instance: LEMMY_INSTANCE,
-        communities: ["bideos"],
-      },
-    ],
-  },
+  // federation: {
+  //   allowList: [
+  //     {
+  //       instance: LEMMY_INSTANCE,
+  //       communities: ["importantvideos"],
+  //     },
+  //   ],
+  // },
   connection: {
     // minutesUntilReprocess: 1,
     secondsBetweenPolls: 30
@@ -105,9 +105,9 @@ export const bestbot: BestBot = new BestBot({
           const now = new Date();
           const anchor = 1680000000000
           const scheduleMillis = Math.pow(((publishedTimestamp.getTime() - anchor) / (now.getTime() - anchor)), 64)*10000;
-          console.info("now: ", now);
-          console.info("published: ", publishedTimestamp);
-          console.info("scheduleMillis: ", scheduleMillis);
+          // console.info("now: ", now);
+          // console.info("published: ", publishedTimestamp);
+          // console.info("scheduleMillis: ", scheduleMillis);
           console.info("scheduling handler for: ", postView.post.name, " in ", scheduleMillis / 1000, " seconds");
           setTimeout(() => BestBot.videoPostHandler(postView, (err, resp) => {
             // BestBot.postSemaphore--;
