@@ -304,6 +304,8 @@ export class Youtube {
   addVideoToPlaylistNoDupes(playlistId: string, videoUrl: string, callback): void {
     if(!this.youtubeRegex.test(videoUrl)) {
       console.warn("Can't add invalid youtube video url: ", videoUrl);
+      callback(null, null);
+      return;
     }
     let videoId = this.youtubeRegex.exec(videoUrl)[1];
 
@@ -333,6 +335,8 @@ export class Youtube {
   addVideoToPlaylist(playlistId: string, videoUrl: string, callback): void {
     if(!this.youtubeRegex.test(videoUrl)) {
       console.warn("Can't add invalid youtube video url: ", videoUrl);
+      callback(null, null);
+      return;
     }
     let videoId = this.youtubeRegex.exec(videoUrl)[1];
 
