@@ -50,7 +50,7 @@
     "os-browserify": "^0.3.0",
     "path-browserify": "^1.0.1",
     "prettier": "3.0.3",
-    "rimraf": "3.0.2",
+    "rimraf": "5.0.1",
     "stream-browserify": "^3.0.0",
     "stream-http": "^3.2.0",
     "ts-loader": "9.4.4",
