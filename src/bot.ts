@@ -12,12 +12,6 @@ export const youtube = new Youtube();
 
 // type SupportedVideoCommunity = 'importantvideos' | 'bideos' | 'sketchy'
 
-// const communityToPlaylistId: { [communityName: string]: string } = {
-//     "importantvideos": "PLHwBlZp_DJfnU1KAem7IYHDNXjVmIxAlv",
-//     "bideos": "test",
-//     "sketchy": "test",
-// };
-
 const communityToPlaylistId: Map<string, string> = new Map(Object.entries({
   "importantvideos": "PLHwBlZp_DJfmuZceDJJsIVbal9JO_hteM",
   "bideos": "PLHwBlZp_DJfl2vj6hjEmbmT7LVk9YD0bX",
