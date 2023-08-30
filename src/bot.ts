@@ -45,7 +45,7 @@ export class BestBot extends lemmybot.LemmyBot {
       console.log("adding: ", postView.post.url, " to ", playlistId);
       this.youtube.addVideoToPlaylistNoDupes(playlistId, postView.post.url, callback);
     } else {
-      console.warn("Not adding post with invalid youtube url: ", postView.post.name);
+      console.warn("Not adding post from unsupported community: ", postView.community.name, postView.post.name);
       callback(null, null);
     }
   }
