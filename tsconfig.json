@@ -9,7 +9,7 @@
   },
   "exclude": ["dist", "node_modules"],
   "ts-node": {
-      "esm": true
+    "esm": true
   },
   "lib": ["esnext"]
 }
