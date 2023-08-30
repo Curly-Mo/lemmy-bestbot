@@ -16,6 +16,7 @@ const communityToPlaylistId: Map<string, string> = new Map(Object.entries({
   "importantvideos": "PLHwBlZp_DJfmuZceDJJsIVbal9JO_hteM",
   "bideos": "PLHwBlZp_DJfl2vj6hjEmbmT7LVk9YD0bX",
   "sketchy": "PLHwBlZp_DJfkHuKW-XFJT4XEafTIRnRVQ",
+  "worksofart": "PLHwBlZp_DJfkC1gPkrRPtxGxeeYJAOCwh",
 }));
 
 export class BestBot extends lemmybot.LemmyBot {
@@ -40,8 +41,7 @@ export class BestBot extends lemmybot.LemmyBot {
     // console.log("playlistId: ", playlistId);
     if (communityToPlaylistId.has(postView.community.name)) {
       let playlistId = communityToPlaylistId.get(postView.community.name)
-      console.log("adding: ", postView.post.url);
-      console.log("adding to: ", playlistId);
+      console.log("adding: ", postView.post.url, " to ", playlistId);
       this.youtube.addVideoToPlaylistNoDupes(playlistId, postView.post.url, callback);
     } else {
       console.warn("Not adding post with invalid youtube url: ", postView.post.name);
