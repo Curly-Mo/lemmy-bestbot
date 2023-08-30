@@ -17,6 +17,7 @@ const communityToPlaylistId: Map<string, string> = new Map(Object.entries({
   "bideos": "PLHwBlZp_DJfl2vj6hjEmbmT7LVk9YD0bX",
   "sketchy": "PLHwBlZp_DJfkHuKW-XFJT4XEafTIRnRVQ",
   "worksofart": "PLHwBlZp_DJfkC1gPkrRPtxGxeeYJAOCwh",
+  "aminals": "PLHwBlZp_DJfnndZCZdfyAwA9lNpxGO4v0"
 }));
 
 export class BestBot extends lemmybot.LemmyBot {
