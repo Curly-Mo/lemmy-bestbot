@@ -97,7 +97,7 @@ export const bestbot: BestBot = new BestBot({
             console.info("reprocessing:", postView.post.name, "in", BestBot.errorReprocessMinutes, "minutes");
             reprocess(BestBot.errorReprocessMinutes);
           } else if(resp) {
-            console.info("Successfully added:", postView.post.name, resp);
+            console.info("Successfully added:", postView.post.name);
             // console.info("preventing reprocess:", postView.post.name);
             // preventReprocess();
           } else {
