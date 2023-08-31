@@ -3,14 +3,10 @@ import { Youtube } from './youtube.js';
 import { config } from 'dotenv';
 
 config();
-// const { LEMMY_INSTANCE, LEMMY_USERNAME_OR_EMAIL, LEMMY_PASSWORD, COMMUNITY, API_KEY } =
-const { LEMMY_INSTANCE, LEMMY_USERNAME_OR_EMAIL, LEMMY_PASSWORD, COMMUNITY } =
+const { LEMMY_INSTANCE, LEMMY_USERNAME_OR_EMAIL, LEMMY_PASSWORD } =
   process.env as Record<string, string>;
 
 export const youtube = new Youtube();
-// const youtube = Youtube.create();
-
-// type SupportedVideoCommunity = 'importantvideos' | 'bideos' | 'sketchy'
 
 const communityToPlaylistId: Map<string, string> = new Map(Object.entries({
   "importantvideos": "PLHwBlZp_DJfmuZceDJJsIVbal9JO_hteM",
@@ -24,11 +20,8 @@ export class BestBot extends lemmybot.LemmyBot {
   public static youtube: Youtube = new Youtube();
   public static errorReprocessMinutes: number = 1;
   public static lowScoreReprocessMinutes: number = 10;
-  // public static postSemaphore: number = 0;
-  // readonly youtube: Youtube;
   constructor(botOptions: lemmybot.BotOptions) {
     super(botOptions);
-    // this.youtube = youtube;
   }
 
   start() {
@@ -36,18 +29,14 @@ export class BestBot extends lemmybot.LemmyBot {
   }
 
   public static videoPostHandler(postView: lemmybot.PostView, callback) {
-    // console.log("postView: ", postView);
-    // console.log("community: ", postView.community);
-    // let playlistId = communityToPlaylistId.get(postView.community.name)
-    // console.log("playlistId: ", playlistId);
-    if (communityToPlaylistId.has(postView.community.name)) {
-      let playlistId = communityToPlaylistId.get(postView.community.name)
-      console.log("adding: ", postView.post.url, " to ", playlistId);
-      this.youtube.addVideoToPlaylistNoDupes(playlistId, postView.post.url, callback);
-    } else {
-      console.warn("Not adding post from unsupported community: ", postView.community.name, postView.post.name);
+    if (!communityToPlaylistId.has(postView.community.name)) {
+      console.warn("Not adding post from unsupported community:", postView.community.name, postView.post.name);
       callback(null, null);
+      return;
     }
+    let playlistId = communityToPlaylistId.get(postView.community.name)
+    console.log("adding:", postView.post.url, "to", playlistId);
+    this.youtube.addVideoToPlaylistNoDupes(playlistId, postView.post.url, callback);
   }
 
 }
@@ -69,17 +58,9 @@ export const bestbot: BestBot = new BestBot({
   //     },
   //   ],
   // },
-  // federation: {
-  //   allowList: [
-  //     {
-  //       instance: LEMMY_INSTANCE,
-  //       communities: ["importantvideos"],
-  //     },
-  //   ],
-  // },
   connection: {
     // minutesUntilReprocess: 1,
-    secondsBetweenPolls: 30
+    secondsBetweenPolls: 60
   },
   handlers: {
     post: {
@@ -94,50 +75,39 @@ export const bestbot: BestBot = new BestBot({
         // botActions: { }
         reprocess
       }) => {
-        // console.info("semaphore1: ", BestBot.postSemaphore);
-        if (postView.counts.score > 24 || postView.creator.admin) {
-          const publishedTimestamp = new Date(postView.post.published);
-          const now = new Date();
-          const anchor = 1680000000000
-          const scheduleMillis = Math.pow(((publishedTimestamp.getTime() - anchor) / (now.getTime() - anchor)), 64)*10000;
-          // console.info("now: ", now);
-          // console.info("published: ", publishedTimestamp);
-          // console.info("scheduleMillis: ", scheduleMillis);
-          console.info("scheduling handler for: ", postView.post.name, " in ", scheduleMillis / 1000, " seconds");
-          setTimeout(() => BestBot.videoPostHandler(postView, (err, resp) => {
-            // BestBot.postSemaphore--;
-            // console.info("semaphore2: ", BestBot.postSemaphore);
-            if(err) {
-              console.warn("errored! ", err);
-              console.info("reprocessing: ", postView.post.name, " in ", BestBot.errorReprocessMinutes, " minutes");
-              reprocess(BestBot.errorReprocessMinutes);
-            } else {
-              // console.info("preventing reprocess: ", postView.post.name);
-              // preventReprocess();
-            }
-          }), scheduleMillis);
-          // }), 5000 * BestBot.postSemaphore);
-          // BestBot.postSemaphore++;
-        } else {
-          console.info("score too low: ", postView.post.name, "; upvotes: ", postView.counts.upvotes);
-          console.info("reprocessing: ", postView.post.name, " in ", BestBot.lowScoreReprocessMinutes, " minutes");
-          reprocess(BestBot.lowScoreReprocessMinutes);
+        if (!BestBot.youtube.youtubeRegex.test(postView.post.url)) {
+          console.warn("Skipping post that doesn't contain youtube link:", postView.community.name, postView.post.name);
+          return;
         }
+        if (postView.counts.score < 25 && !postView.creator.admin) {
+          console.info("score too low:", postView.post.name, "; upvotes:", postView.counts.upvotes);
+          console.info("reprocessing:", postView.post.name, "in", BestBot.lowScoreReprocessMinutes, "minutes");
+          reprocess(BestBot.lowScoreReprocessMinutes);
+          return;
+        }
+        const publishedTimestamp = new Date(postView.post.published);
+        const now = new Date();
+        const anchor = 1680000000000
+        const scheduleMillis = Math.pow(((publishedTimestamp.getTime() - anchor) / (now.getTime() - anchor)), 64)*10000;
+        console.info("scheduling handler for:", postView.community.name, postView.post.name, "in", scheduleMillis / 1000, "seconds");
+
+        const videoPostCallback = (err, resp) => {
+          if(err) {
+            console.warn("errored! ", err);
+            console.info("reprocessing:", postView.post.name, "in", BestBot.errorReprocessMinutes, "minutes");
+            reprocess(BestBot.errorReprocessMinutes);
+          } else if(resp) {
+            console.info("Successfully added:", postView.post.name, resp);
+            // console.info("preventing reprocess:", postView.post.name);
+            // preventReprocess();
+          } else {
+            console.info("nothing done for:", postView.post.name);
+          }
+        }
+
+        setTimeout(() => BestBot.videoPostHandler(postView, videoPostCallback), scheduleMillis);
       }
     }
-    // post: (res) => {
-    //   // console.log(res.postView.community);
-    //   // console.log(res.postView.post.name);
-    //   // console.log(res.postView.post.url);
-    //   // console.log(res.postView.post.id);
-    //   // youtube.updatePlaylist([res.postView.post.url])
-    //   // if(youtube.auth !== undefined) {
-    //   //   youtube.test([res.postView.post.url])
-    //   // }
-    //   // youtube.test([res.postView.post.url])
-    //   let result = BestBot.videoPostHandler(res.postView);
-    //   console.log("result: ", result);
-    // }
   },
   markAsBot: false,
 });
