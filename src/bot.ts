@@ -92,7 +92,7 @@ export const bestbot: BestBot = new BestBot({
           const published = Date.parse(postView.post.published);
           const diffHours = (now - published) / 3600000;
           console.info("been reprocessing for ", diffHours, "hours", postView.community.name, postView.post.name, postView.counts.upvotes);
-          if(diffHours > 30) {
+          if(diffHours > 24) {
             if(ImportantCommunities.has(postView.community.name)) {
               console.info("removing post:", postView.community.name, postView.post.name, postView.counts.upvotes);
               botActions.createComment({post_id: postView.post.id, content: "The people have voted, and regretfully this post has been deemed `not important`. Better luck next time."})
