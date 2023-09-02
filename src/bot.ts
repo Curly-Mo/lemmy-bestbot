@@ -8,7 +8,7 @@ const { LEMMY_INSTANCE, LEMMY_USERNAME_OR_EMAIL, LEMMY_PASSWORD } =
 
 export const youtube = new Youtube();
 
-const communityToPlaylistId: Map<string, string> = new Map(Object.entries({
+const CommunityToPlaylistId: Map<string, string> = new Map(Object.entries({
   "importantvideos": "PLHwBlZp_DJfmuZceDJJsIVbal9JO_hteM",
   "bideos": "PLHwBlZp_DJfl2vj6hjEmbmT7LVk9YD0bX",
   "sketchy": "PLHwBlZp_DJfkHuKW-XFJT4XEafTIRnRVQ",
@@ -18,6 +18,8 @@ const communityToPlaylistId: Map<string, string> = new Map(Object.entries({
   "norm": "PLHwBlZp_DJfkB6Tm-CKNe_IplzaMIXtYE",
   "standup": "PLHwBlZp_DJflhO0ifYF1mXEAAal58-E0o"
 }));
+
+const ImportantCommunities: Set<string> = new Set(["importantvideos", "importantimages", "sketchy", "worksofart"]);
 
 export class BestBot extends lemmybot.LemmyBot {
   public static youtube: Youtube = new Youtube();
@@ -32,12 +34,17 @@ export class BestBot extends lemmybot.LemmyBot {
   }
 
   public static videoPostHandler(postView: lemmybot.PostView, callback) {
-    if (!communityToPlaylistId.has(postView.community.name)) {
+    if (!BestBot.youtube.youtubeRegex.test(postView.post.url)) {
+      console.warn("Skipping post that doesn't contain youtube link:", postView.community.name, postView.post.name);
+      callback(null, null);
+      return;
+    }
+    if (!CommunityToPlaylistId.has(postView.community.name)) {
       console.warn("Not adding post from unsupported community:", postView.community.name, postView.post.name);
       callback(null, null);
       return;
     }
-    let playlistId = communityToPlaylistId.get(postView.community.name)
+    let playlistId = CommunityToPlaylistId.get(postView.community.name)
     console.log("adding:", postView.post.url, "to", playlistId);
     this.youtube.addVideoToPlaylistNoDupes(playlistId, postView.post.url, callback);
   }
@@ -76,14 +83,23 @@ export const bestbot: BestBot = new BestBot({
         //   counts: { score }
         // },
         // botActions: { }
+        botActions,
         reprocess
       }) => {
-        if (!BestBot.youtube.youtubeRegex.test(postView.post.url)) {
-          console.warn("Skipping post that doesn't contain youtube link:", postView.community.name, postView.post.name);
-          return;
-        }
-        if (postView.counts.score < 25 && !postView.creator.admin) {
-          console.info("score too low:", postView.post.name, "; upvotes:", postView.counts.upvotes);
+        if (postView.counts.upvotes < 25 && !postView.creator.admin) {
+          console.info("score too low:", postView.post.name, "; score:", postView.counts.score, "; upvotes:", postView.counts.upvotes);
+          const now = Date.now();
+          const published = Date.parse(postView.post.published);
+          const diffHours = (now - published) / 3600000;
+          console.info("been reprocessing for ", diffHours, "hours", postView.community.name, postView.post.name, postView.counts.upvotes);
+          if(diffHours > 36) {
+            if(ImportantCommunities.has(postView.community.name)) {
+              console.info("removing post:", postView.community.name, postView.post.name, postView.counts.upvotes);
+              botActions.removePost({post_id: postView.post.id, reason: "The people have voted, and regretfully this post has been deemed `not important`. Better luck next time."})
+            }
+            console.info("no longer attempting to reprocess:", postView.community.name, postView.post.name);
+            return;
+          }
           console.info("reprocessing:", postView.post.name, "in", BestBot.lowScoreReprocessMinutes, "minutes");
           reprocess(BestBot.lowScoreReprocessMinutes);
           return;
