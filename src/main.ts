@@ -1,4 +1,5 @@
-import { bestbot } from './bot.js';
+import { bestbot } from './bestbot.js';
+import { sausagebot } from './sausagebot.js';
 
 // declare const global: {
 //   [x: string]: any;
@@ -10,4 +11,5 @@ import { bestbot } from './bot.js';
 
 
 // youtube.authorize(() => bestbot.start());
-bestbot.start(); 
+// bestbot.start(); 
+sausagebot.start(); 
