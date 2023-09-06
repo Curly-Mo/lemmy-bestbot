@@ -16,7 +16,8 @@ const CommunityToPlaylistId: Map<string, string> = new Map(Object.entries({
   "aminals": "PLHwBlZp_DJfnndZCZdfyAwA9lNpxGO4v0",
   "musicbideos": "PLHwBlZp_DJfnfMU7n5IT-8CfPRbJAyb-L",
   "norm": "PLHwBlZp_DJfkB6Tm-CKNe_IplzaMIXtYE",
-  "standup": "PLHwBlZp_DJflhO0ifYF1mXEAAal58-E0o"
+  "standup": "PLHwBlZp_DJflhO0ifYF1mXEAAal58-E0o",
+  "mealtimevideos": "PLHwBlZp_DJfn_dCiWOFHIVY5SHf3iBF_D"
 }));
 
 const ImportantCommunities: Set<string> = new Set(["importantvideos", "importantimages", "sketchy", "worksofart"]);
@@ -86,17 +87,19 @@ export const bestbot: BestBot = new BestBot({
         botActions,
         reprocess
       }) => {
-        if (postView.counts.upvotes < 25 && !postView.creator.admin) {
+        if (postView.counts.upvotes < 20 && !postView.creator.admin) {
           console.info("score too low:", postView.post.name, "; score:", postView.counts.score, "; upvotes:", postView.counts.upvotes);
           const now = Date.now();
           const published = Date.parse(postView.post.published);
           const diffHours = (now - published) / 3600000;
           console.info("been reprocessing for ", diffHours, "hours", postView.community.name, postView.post.name, postView.counts.upvotes);
-          if(diffHours > 24) {
+          if(diffHours > 20) {
             if(ImportantCommunities.has(postView.community.name)) {
               console.info("removing post:", postView.community.name, postView.post.name, postView.counts.upvotes);
-              botActions.createComment({post_id: postView.post.id, content: "The people have voted, and regretfully this post has been deemed `not important`. Better luck next time."})
-              botActions.removePost({post_id: postView.post.id, reason: "not important enough"})
+              const created = botActions.createComment({post_id: postView.post.id, content: "The people have voted, and regretfully this post has been deemed `not important`. Better luck next time."})
+              created.then(() =>
+                botActions.removePost({post_id: postView.post.id, reason: "not important enough"})
+              );
             }
             console.info("no longer attempting to reprocess:", postView.community.name, postView.post.name);
             return;
