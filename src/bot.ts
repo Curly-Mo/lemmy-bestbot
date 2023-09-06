@@ -16,7 +16,8 @@ const CommunityToPlaylistId: Map<string, string> = new Map(Object.entries({
   "aminals": "PLHwBlZp_DJfnndZCZdfyAwA9lNpxGO4v0",
   "musicbideos": "PLHwBlZp_DJfnfMU7n5IT-8CfPRbJAyb-L",
   "norm": "PLHwBlZp_DJfkB6Tm-CKNe_IplzaMIXtYE",
-  "standup": "PLHwBlZp_DJflhO0ifYF1mXEAAal58-E0o"
+  "standup": "PLHwBlZp_DJflhO0ifYF1mXEAAal58-E0o",
+  "mealtimevideos": "PLHwBlZp_DJfn_dCiWOFHIVY5SHf3iBF_D"
 }));
 
 const ImportantCommunities: Set<string> = new Set(["importantvideos", "importantimages", "sketchy", "worksofart"]);
