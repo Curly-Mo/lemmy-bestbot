@@ -87,7 +87,7 @@ export const bestbot: BestBot = new BestBot({
         botActions,
         reprocess
       }) => {
-        if (postView.post.deleted) {
+        if (postView.post.deleted || postView.post.removed) {
           console.info("not processing deleted post:", postView.community.name, postView.post.name);
           return;
         }
