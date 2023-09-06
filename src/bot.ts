@@ -87,6 +87,10 @@ export const bestbot: BestBot = new BestBot({
         botActions,
         reprocess
       }) => {
+        if (postView.post.deleted) {
+          console.info("not processing deleted post:", postView.community.name, postView.post.name);
+          return;
+        }
         if (postView.counts.upvotes < 20 && !postView.creator.admin) {
           console.info("score too low:", postView.post.name, "; score:", postView.counts.score, "; upvotes:", postView.counts.upvotes);
           const now = Date.now();
