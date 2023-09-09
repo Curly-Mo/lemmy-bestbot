@@ -151,6 +151,11 @@ export class Youtube {
 
   getChannelVideos(channelId: string, lookback: number, callback: {(err?: Error, items?: SearchResult[]): void}): void {
     this.youtube.search.list({channelId: channelId, part: ['snippet'], order: "date", maxResults: lookback}, (err?: Error, response?: SearchListResponse) => {
+      if (err) {
+        console.info("error fetching channel videos", err);
+        callback(err, []);
+        return;
+      }
       const videos = response.data.items.filter(item => item.id.kind == 'youtube#video')
       callback(err, videos);
     });
