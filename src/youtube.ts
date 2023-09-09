@@ -25,6 +25,10 @@ server.addPage("/oauthcallback", lien => {
     console.log("Code obtained:", lien.query.code);
 });
 
+export type PlaylistItemsResponse = GaxiosResponse<youtube_v3.Schema$PlaylistItemListResponse>;
+export type SearchListResponse = GaxiosResponse<youtube_v3.Schema$SearchListResponse>;
+export type SearchResult = youtube_v3.Schema$SearchResult;
+
 export class Youtube {
   readonly playlistTitle: string;
   readonly tokenDir: string;
@@ -64,6 +68,14 @@ export class Youtube {
     const urlParts: RegExpExecArray = this.youtubeRegex.exec(youtubeUrl);
     // console.info("urlParts:", urlParts);
     return urlParts[1];
+  }
+
+  /** Build a youtube url from a videoId */
+  buildVideoUrl(videoId: string, shortForm: boolean = true): string {
+    if (shortForm) {
+      return `https://youtu.be/${videoId}`;
+    }
+    return `https://youtube.com/watch?v=${videoId}`;
   }
 
   // TODO: create a more robust version of this method
@@ -129,11 +141,18 @@ export class Youtube {
     }}, callback);
   }
 
-  getPlaylistContents(playlistId: string, callback): void {
-    this.youtube.playlistItems.list({playlistId: playlistId, part: ['contentDetails'], maxResults: 5000}, (err: Error | null, response?: GaxiosResponse<youtube_v3.Schema$PlaylistItemListResponse> | null) => {
+  getPlaylistContents(playlistId: string, callback: {(err?: Error, response?: PlaylistItemsResponse): void}): void {
+    this.youtube.playlistItems.list({playlistId: playlistId, part: ['contentDetails'], maxResults: 5000}, (err?: Error, response?: PlaylistItemsResponse) => {
       // console.warn("err:", err);
       // console.info("items:", response.items);
       callback(err, response);
+    });
+  }
+
+  getChannelVideos(channelId: string, lookback: number, callback: {(err?: Error, items?: SearchResult[]): void}): void {
+    this.youtube.search.list({channelId: channelId, part: ['snippet'], order: "date", maxResults: lookback}, (err?: Error, response?: SearchListResponse) => {
+      const videos = response.data.items.filter(item => item.id.kind == 'youtube#video')
+      callback(err, videos);
     });
   }
 

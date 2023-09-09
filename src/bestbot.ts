@@ -6,8 +6,6 @@ config();
 const { LEMMY_INSTANCE, LEMMY_USERNAME_OR_EMAIL, LEMMY_PASSWORD } =
   process.env as Record<string, string>;
 
-export const youtube = new Youtube();
-
 const CommunityToPlaylistId: Map<string, string> = new Map(Object.entries({
   "importantvideos": "PLHwBlZp_DJfmuZceDJJsIVbal9JO_hteM",
   "bideos": "PLHwBlZp_DJfl2vj6hjEmbmT7LVk9YD0bX",
@@ -35,7 +33,7 @@ export class BestBot extends lemmybot.LemmyBot {
   }
 
   public static videoPostHandler(postView: lemmybot.PostView, callback) {
-    if (!BestBot.youtube.youtubeRegex.test(postView.post.url)) {
+    if (!this.youtube.youtubeRegex.test(postView.post.url)) {
       console.warn("Skipping post that doesn't contain youtube link:", postView.community.name, postView.post.name);
       callback(null, null);
       return;
@@ -59,7 +57,7 @@ export const bestbot: BestBot = new BestBot({
     username: LEMMY_USERNAME_OR_EMAIL,
     password: LEMMY_PASSWORD,
   },
-  dbFile: 'db.sqlite3',
+  dbFile: 'best_db.sqlite3',
   federation: 'local',
   // federation: {
   //   allowList: [
