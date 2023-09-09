@@ -70,6 +70,14 @@ export class Youtube {
     return urlParts[1];
   }
 
+  /** Build a youtube url from a videoId */
+  buildVideoUrl(videoId: string, shortForm: boolean = true): string {
+    if (shortForm) {
+      return `https://youtu.be/${videoId}`;
+    }
+    return `https://youtube.com/watch?v=${videoId}`;
+  }
+
   // TODO: create a more robust version of this method
   // /** check if the url is a youtube video **/
   // isYoutubeUrl(url: string): boolean {
@@ -141,9 +149,10 @@ export class Youtube {
     });
   }
 
-  getChannelVideos(channelId: string, lookback: number, callback: {(err?: Error, response?: SearchResult[]): void}): void {
+  getChannelVideos(channelId: string, lookback: number, callback: {(err?: Error, items?: SearchResult[]): void}): void {
     this.youtube.search.list({channelId: channelId, part: ['snippet'], order: "date", maxResults: lookback}, (err?: Error, response?: SearchListResponse) => {
-      callback(err, response.data.items);
+      const videos = response.data.items.filter(item => item.id.kind == 'youtube#video')
+      callback(err, videos);
     });
   }
 
