@@ -69,7 +69,7 @@ export const bestbot: BestBot = new BestBot({
   // },
   connection: {
     // minutesUntilReprocess: 1,
-    secondsBetweenPolls: 60
+    secondsBetweenPolls: 600
   },
   handlers: {
     post: {
