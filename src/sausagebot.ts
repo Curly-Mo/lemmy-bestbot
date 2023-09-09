@@ -46,7 +46,7 @@ export class SausageBot extends lemmybot.LemmyBot {
   public static getSausageVideos(): Promise<SearchResult[]> {
     const youtube = this.youtube;
     return new Promise((resolve, reject) => {
-      youtube.getChannelVideos(SAUSAGE_CHANNEL_ID, 5, (err, videos) => {
+      youtube.getChannelVideos(SAUSAGE_CHANNEL_ID, 1, (err, videos) => {
         if(err) {
           return reject(err);
         }else{
@@ -88,7 +88,7 @@ export const sausagebot: SausageBot = new SausageBot({
     // secondsBetweenPolls: 60
   },
   schedule: {
-    cronExpression: '* 15 * * * *',
+    cronExpression: '0 15 * * * *',
     timezone: 'America/New_York',
 		doTask: (botActions) => {
       return SausageBot.postSausages(botActions);
