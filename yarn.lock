@@ -3110,10 +3110,10 @@ levn@~0.3.0:
     prelude-ls "~1.1.2"
     type-check "~0.3.2"
 
-lien@^3.4.2:
-  version "3.4.2"
-  resolved "https://registry.yarnpkg.com/lien/-/lien-3.4.2.tgz#6ffb80ddc00fb8fe892476de735fef44ae822137"
-  integrity sha512-GY9K+nm2xuhTSPg2i/fmpUWoBG73uJFp8TM2QzQJMpFYiGs0tJXv5GFaAJqWbJrk6OQ7eKMBYVc9fhHmWZTLhg==
+lien@^3.4.3:
+  version "3.4.3"
+  resolved "https://registry.yarnpkg.com/lien/-/lien-3.4.3.tgz#d5035018599ec13ee00eb6f22825d5c493de1adb"
+  integrity sha512-idhsDp4ThDYN1xravGr8+liw4H2sH3dNwa7v3vk6Gpr6/xFWo8MfF6a/ihd6z16CX9TI2oNbSdVHdG1mQk7kzw==
   dependencies:
     body-parser "^1.15.0"
     cookie-parser "^1.4.3"

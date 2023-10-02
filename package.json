@@ -21,7 +21,7 @@
     "google-auth-library": "^9.0.0",
     "googleapis": "^126.0.1",
     "lemmy-bot": "^0.4.5",
-    "lien": "^3.4.2",
+    "lien": "^3.4.3",
     "process": "^0.11.10",
     "typescript": "^5.2.2"
   },
