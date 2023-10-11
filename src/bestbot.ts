@@ -23,7 +23,7 @@ const ImportantCommunities: Set<string> = new Set(["importantvideos", "important
 export class BestBot extends lemmybot.LemmyBot {
   public static youtube: Youtube = new Youtube();
   public static errorReprocessMinutes: number = 1;
-  public static lowScoreReprocessMinutes: number = 10;
+  public static lowScoreReprocessMinutes: number = 20;
   constructor(botOptions: lemmybot.BotOptions) {
     super(botOptions);
   }
@@ -69,7 +69,7 @@ export const bestbot: BestBot = new BestBot({
   // },
   connection: {
     // minutesUntilReprocess: 1,
-    secondsBetweenPolls: 60
+    secondsBetweenPolls: 1200
   },
   handlers: {
     post: {

@@ -88,7 +88,7 @@ export const sausagebot: SausageBot = new SausageBot({
     // secondsBetweenPolls: 60
   },
   schedule: {
-    cronExpression: '0 15 * * * *',
+    cronExpression: '0 25 * * * *',
     timezone: 'America/New_York',
 		doTask: (botActions) => {
       return SausageBot.postSausages(botActions);
