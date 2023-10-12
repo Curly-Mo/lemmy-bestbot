@@ -1,11 +1,11 @@
 import lemmybot from 'lemmy-bot';
-import { config } from 'dotenv';
-import { ScrapeTube, Recommendation } from './scrapetube.js';
-import { Youtube } from './youtube.js';
-import { LemmyHttp } from 'lemmy-js-client';
+import {config} from 'dotenv';
+import {ScrapeTube, Recommendation} from './scrapetube.js';
+import {Youtube} from './youtube.js';
+import {LemmyHttp} from 'lemmy-js-client';
 
 config();
-const { LEMMY_INSTANCE, LEMMY_ALGORITHM_USERNAME_OR_EMAIL, LEMMY_ALGORITHM_PASSWORD } =
+const {LEMMY_INSTANCE, LEMMY_ALGORITHM_USERNAME_OR_EMAIL, LEMMY_ALGORITHM_PASSWORD} =
   process.env as Record<string, string>;
 
 const BotPlaygroundCommunity: string = "botplayground";
@@ -13,12 +13,12 @@ const BotPlaygroundCommunity: string = "botplayground";
 const CommunityToPlaylistId: Map<string, string> = new Map(Object.entries({
   "importantvideos": "PLHwBlZp_DJfmuZceDJJsIVbal9JO_hteM",
   "bideos": "PLHwBlZp_DJfl2vj6hjEmbmT7LVk9YD0bX",
-  "sketchy": "PLHwBlZp_DJfkHuKW-XFJT4XEafTIRnRVQ",
-  "worksofart": "PLHwBlZp_DJfkC1gPkrRPtxGxeeYJAOCwh",
+  // "sketchy": "PLHwBlZp_DJfkHuKW-XFJT4XEafTIRnRVQ",
+  // "worksofart": "PLHwBlZp_DJfkC1gPkrRPtxGxeeYJAOCwh",
   "aminals": "PLHwBlZp_DJfnndZCZdfyAwA9lNpxGO4v0",
   "musicbideos": "PLHwBlZp_DJfnfMU7n5IT-8CfPRbJAyb-L",
-  "norm": "PLHwBlZp_DJfkB6Tm-CKNe_IplzaMIXtYE",
-  "standup": "PLHwBlZp_DJflhO0ifYF1mXEAAal58-E0o",
+  // "norm": "PLHwBlZp_DJfkB6Tm-CKNe_IplzaMIXtYE",
+  // "standup": "PLHwBlZp_DJflhO0ifYF1mXEAAal58-E0o",
   "mealtimevideos": "PLHwBlZp_DJfn_dCiWOFHIVY5SHf3iBF_D"
 }));
 
@@ -26,17 +26,15 @@ export class AlgorithmBot extends lemmybot.LemmyBot {
   public static scrapetube: ScrapeTube = new ScrapeTube();
   public static youtube: Youtube = new Youtube();
   public static lemmyHttp = new LemmyHttp(`https://${LEMMY_INSTANCE}`);
-  public static minViewCount = 4000000;
+  public static minViewCount = 400000;
   constructor(botOptions: lemmybot.BotOptions) {
     super(botOptions);
   }
 
   start() {
-    // super.start();
     AlgorithmBot.youtube.authorize(() => super.start());
-    // const playlistId = CommunityToPlaylistId.get("bideos");
-    // const recsFuture = AlgorithmBot.scrapetube.getPlaylistRelatedVideos(playlistId);
-    // recsFuture.then(recs => console.log("RESPONSE:", recs));
+    // AlgorithmBot.getRecs("importantvideos")
+    //   .then(recs => console.log("filtered:", recs));
   }
 
   public static async getRecs(community: string): Promise<Array<Recommendation>> {
@@ -44,26 +42,32 @@ export class AlgorithmBot extends lemmybot.LemmyBot {
     const playlistId = CommunityToPlaylistId.get(community);
     const recsFuture = AlgorithmBot.scrapetube.getPlaylistRelatedVideos(playlistId);
     // return recsFuture.then(recs => recs.filter(rec => rec.rec.uploadDate);
-    return recsFuture.then(recs => recs.filter(rec => rec.rec.viewCount > this.minViewCount));
+    return recsFuture
+      .then(recs =>
+        recs
+          .filter(rec => rec.rec.uploadDate == undefined || !rec.rec.uploadDate.includes("day"))
+          .filter(rec => rec.rec.uploadDate == undefined || !rec.rec.uploadDate.includes("weeks"))
+          .filter(rec => rec.rec.viewCount > this.minViewCount)
+      );
   }
 
   public static async postRec(botActions: lemmybot.BotActions): Promise<void> {
+    const community = this.chooseCommunity();
     const postsFuture = this.getPosts(BotPlaygroundCommunity);
-    const community = "importantvideos";
     const recsFuture = this.getRecs(community);
     return Promise.all([postsFuture, recsFuture]).then(results => {
       const posts = results[0];
       const recs = results[1];
-      console.log("POSTS:", posts);
-      console.log("RECS:", recs);
+      // console.log("POSTS:", posts);
+      // console.log("RECS:", recs);
       const postVideoIds = new Set(posts.map(postView => postView.post).filter(post => this.youtube.isYoutubeUrl(post.url)).map(post => this.youtube.extractVideoId(post.url)));
-      console.log("postVideoIds:", postVideoIds);
+      // console.log("postVideoIds:", postVideoIds);
       const communityId = posts[0].community.id;
-      console.log("communityId:", communityId);
+      // console.log("communityId:", communityId);
       for (const rec of recs) {
         console.log("REC:", rec);
         const repost = postVideoIds.has(rec.rec.id);
-        if(!repost) {
+        if (!repost) {
           const videoUrl = this.youtube.buildVideoUrl(rec.rec.id);
           console.info("Posting", rec.rec.title, videoUrl, "to", BotPlaygroundCommunity);
           return botActions.createPost({
@@ -88,6 +92,11 @@ export class AlgorithmBot extends lemmybot.LemmyBot {
 
   public static communityLink(communityName: string): string {
     return `!${communityName}@lemmy.best`;
+  }
+
+  public static chooseCommunity(): string {
+    const communities = Array.from(CommunityToPlaylistId.keys());
+    return communities[Math.floor(Math.random() * communities.length)];
   }
 
 }
@@ -116,9 +125,9 @@ export const algorithmbot: AlgorithmBot = new AlgorithmBot({
   schedule: {
     cronExpression: '0 0 9 * * *',
     timezone: 'America/New_York',
-		doTask: (botActions) => {
+    doTask: (botActions) => {
       return AlgorithmBot.postRec(botActions);
-		},
+    },
   },
   markAsBot: false,
 });

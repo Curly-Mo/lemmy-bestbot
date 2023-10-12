@@ -1,4 +1,4 @@
-import { Client, Playlist, VideoRelated, VideoCompact, Video } from "youtubei";
+import {Client, Playlist, VideoRelated, VideoCompact, Video} from "youtubei";
 
 
 export interface Recommendation {
@@ -7,18 +7,6 @@ export interface Recommendation {
   count: Number;
   score: Number;
 }
-
-// interface VideoAndRelated {
-//   video: Video;
-//   related: Array<VideoCompact>;
-// }
-
-// class VideoAndRelated implements VideoAndRelated {
-//   video: Video;
-//   related: Array<VideoCompact>;
-// }
-
-// const wut = new VideoAndRelated();
 
 export class ScrapeTube {
   client: Client;
@@ -56,26 +44,17 @@ export class ScrapeTube {
     // console.info("relatedMap", relatedMap);
 
     const sortedRecKeys = Array.from(relatedMap.keys())
-    .sort((a, b) => relatedMap.get(a).length - relatedMap.get(b).length).reverse();
+      .sort((a, b) => relatedMap.get(a).length - relatedMap.get(b).length).reverse();
     // console.log("Sorted:", sortedRecKeys);
-    
+
     const recs = sortedRecKeys.map(recId => {
       const rec = videosMap.get(recId);
       const sources =
         relatedMap.get(recId).map(sourceId => sourceVideosMap.get(sourceId));
       return {rec: rec, sources: sources, count: sources.length, score: sources.length};
     });
-    console.log("RECS:", recs);
+    // console.log("RECS:", recs);
 
-    // const relatedMap = new Map<String, Array<VideoCompact>>;
-    // relatedVideos.flatMap(related => related).map(related => {
-    //   if (relatedMap.has(related.id)) {
-    //     relatedMap.get(related.id).push(related);
-    //   } else {
-    //     relatedMap.set(related.id, [related]);
-    //   }
-    // });
-    // console.info("relatedMap", relatedMap);
     return Promise.resolve(recs);
   }
 
@@ -93,11 +72,11 @@ export class ScrapeTube {
   public async getAllRelated(video: Video): Promise<VideoCompact[]> {
     // return video.related.items.map(rel => rel as VideoCompact);
     return video.related.next(10)
-    .then(items => video.related.items)
-    .catch(error => {
-      console.log("errored!", error);
-      return video.related.items;
-    })
-    .then(items => items.map(item => item as VideoCompact));
+      .then(items => video.related.items)
+      .catch(error => {
+        console.log("errored!", error);
+        return video.related.items;
+      })
+      .then(items => items.map(item => item as VideoCompact));
   }
 }
