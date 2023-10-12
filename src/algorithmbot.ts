@@ -1,11 +1,11 @@
 import lemmybot from 'lemmy-bot';
-import { config } from 'dotenv';
-import { ScrapeTube, Recommendation } from './scrapetube.js';
-import { Youtube } from './youtube.js';
-import { LemmyHttp } from 'lemmy-js-client';
+import {config} from 'dotenv';
+import {ScrapeTube, Recommendation} from './scrapetube.js';
+import {Youtube} from './youtube.js';
+import {LemmyHttp} from 'lemmy-js-client';
 
 config();
-const { LEMMY_INSTANCE, LEMMY_ALGORITHM_USERNAME_OR_EMAIL, LEMMY_ALGORITHM_PASSWORD } =
+const {LEMMY_INSTANCE, LEMMY_ALGORITHM_USERNAME_OR_EMAIL, LEMMY_ALGORITHM_PASSWORD} =
   process.env as Record<string, string>;
 
 const BotPlaygroundCommunity: string = "botplayground";
@@ -32,11 +32,7 @@ export class AlgorithmBot extends lemmybot.LemmyBot {
   }
 
   start() {
-    // super.start();
     AlgorithmBot.youtube.authorize(() => super.start());
-    // const playlistId = CommunityToPlaylistId.get("bideos");
-    // const recsFuture = AlgorithmBot.scrapetube.getPlaylistRelatedVideos(playlistId);
-    // recsFuture.then(recs => console.log("RESPONSE:", recs));
   }
 
   public static async getRecs(community: string): Promise<Array<Recommendation>> {
@@ -63,7 +59,7 @@ export class AlgorithmBot extends lemmybot.LemmyBot {
       for (const rec of recs) {
         console.log("REC:", rec);
         const repost = postVideoIds.has(rec.rec.id);
-        if(!repost) {
+        if (!repost) {
           const videoUrl = this.youtube.buildVideoUrl(rec.rec.id);
           console.info("Posting", rec.rec.title, videoUrl, "to", BotPlaygroundCommunity);
           return botActions.createPost({
@@ -116,9 +112,9 @@ export const algorithmbot: AlgorithmBot = new AlgorithmBot({
   schedule: {
     cronExpression: '0 0 9 * * *',
     timezone: 'America/New_York',
-		doTask: (botActions) => {
+    doTask: (botActions) => {
       return AlgorithmBot.postRec(botActions);
-		},
+    },
   },
   markAsBot: false,
 });
