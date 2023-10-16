@@ -19,7 +19,7 @@
     "cli-interact": "^0.1.9",
     "dotenv": "^16.3.1",
     "google-auth-library": "^9.0.0",
-    "googleapis": "^126.0.1",
+    "googleapis": "^127.0.0",
     "lemmy-bot": "^0.4.5",
     "lien": "^3.4.2",
     "process": "^0.11.10",
