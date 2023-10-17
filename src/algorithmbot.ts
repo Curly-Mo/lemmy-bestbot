@@ -45,6 +45,7 @@ export class AlgorithmBot extends lemmybot.LemmyBot {
     return recsFuture
       .then(recs =>
         recs
+          .filter(rec => rec.rec.uploadDate == undefined || !rec.rec.uploadDate.includes("hour"))
           .filter(rec => rec.rec.uploadDate == undefined || !rec.rec.uploadDate.includes("day"))
           .filter(rec => rec.rec.uploadDate == undefined || !rec.rec.uploadDate.includes("weeks"))
           .filter(rec => rec.rec.viewCount > this.minViewCount)
@@ -77,7 +78,6 @@ export class AlgorithmBot extends lemmybot.LemmyBot {
             body: `I am a bot, beep boop.  \nI think this video might fit in over at ${this.communityLink(community)}`,
           });
         }
-        return;
       }
     });
   }
