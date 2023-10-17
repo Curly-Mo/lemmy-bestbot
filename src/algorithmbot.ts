@@ -86,6 +86,7 @@ export class AlgorithmBot extends lemmybot.LemmyBot {
     const future = this.lemmyHttp.getPosts({
       community_name: community,
       sort: "New",
+      limit: 200,
     });
     return future.then(resp => resp.posts);
   }
