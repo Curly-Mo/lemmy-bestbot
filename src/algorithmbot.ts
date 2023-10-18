@@ -124,7 +124,7 @@ export const algorithmbot: AlgorithmBot = new AlgorithmBot({
     // secondsBetweenPolls: 60
   },
   schedule: {
-    cronExpression: '0 0 9,10 * * *',
+    cronExpression: '0 0 9,10,11 * * *',
     timezone: 'America/New_York',
     doTask: (botActions) => {
       return AlgorithmBot.postRec(botActions);
