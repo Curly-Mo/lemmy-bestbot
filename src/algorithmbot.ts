@@ -8,7 +8,7 @@ config();
 const {LEMMY_INSTANCE, LEMMY_ALGORITHM_USERNAME_OR_EMAIL, LEMMY_ALGORITHM_PASSWORD} =
   process.env as Record<string, string>;
 
-const BotPlaygroundCommunity: string = "botplayground";
+const BotPlaygroundCommunity: string = "thealgorithm";
 
 const CommunityToPlaylistId: Map<string, string> = new Map(Object.entries({
   "importantvideos": "PLHwBlZp_DJfmuZceDJJsIVbal9JO_hteM",
