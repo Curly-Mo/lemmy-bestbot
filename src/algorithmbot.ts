@@ -75,7 +75,7 @@ export class AlgorithmBot extends lemmybot.LemmyBot {
             community_id: communityId,
             name: rec.rec.title,
             url: videoUrl,
-            body: `I am a bot, beep boop.  \nI think this video might fit in over at ${this.communityLink(community)}`,
+            body: `I am a bot, beep boop. I think this video might fit in over at ${this.communityLink(community)}`,
           });
         }
       }
