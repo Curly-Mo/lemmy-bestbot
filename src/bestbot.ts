@@ -1,9 +1,9 @@
 import lemmybot from 'lemmy-bot';
-import { Youtube } from './youtube.js';
-import { config } from 'dotenv';
+import {Youtube} from './youtube.js';
+import {config} from 'dotenv';
 
 config();
-const { LEMMY_INSTANCE, LEMMY_USERNAME_OR_EMAIL, LEMMY_PASSWORD } =
+const {LEMMY_INSTANCE, LEMMY_USERNAME_OR_EMAIL, LEMMY_PASSWORD} =
   process.env as Record<string, string>;
 
 const CommunityToPlaylistId: Map<string, string> = new Map(Object.entries({
@@ -16,6 +16,19 @@ const CommunityToPlaylistId: Map<string, string> = new Map(Object.entries({
   "norm": "PLHwBlZp_DJfkB6Tm-CKNe_IplzaMIXtYE",
   "standup": "PLHwBlZp_DJflhO0ifYF1mXEAAal58-E0o",
   "mealtimevideos": "PLHwBlZp_DJfn_dCiWOFHIVY5SHf3iBF_D"
+}));
+
+const CommunityToMinVotes: Map<string, number> = new Map(Object.entries({
+  "importantvideos": 10,
+  "importantimages": 25,
+  "sketchy": 5,
+  "worksofart": 5,
+  "bideos": 10,
+  "aminals": 10,
+  "musicbideos": 10,
+  "norm": 10,
+  "standup": 10,
+  "mealtimevideos": 10,
 }));
 
 const ImportantCommunities: Set<string> = new Set(["importantvideos", "importantimages", "sketchy", "worksofart"]);
@@ -89,14 +102,15 @@ export const bestbot: BestBot = new BestBot({
           console.info("not processing deleted post:", postView.community.name, postView.post.name);
           return;
         }
-        if (postView.counts.upvotes < 20 && !postView.creator.admin) {
+        const minVotes = CommunityToMinVotes.has(postView.community.name) ? CommunityToMinVotes.get(postView.community.name) : 0;
+        if (postView.counts.upvotes < minVotes && !postView.creator.admin) {
           console.info("score too low:", postView.post.name, "; score:", postView.counts.score, "; upvotes:", postView.counts.upvotes);
           const now = Date.now();
           const published = Date.parse(postView.post.published);
           const diffHours = (now - published) / 3600000;
           console.info("been reprocessing for ", diffHours, "hours", postView.community.name, postView.post.name, postView.counts.upvotes);
-          if(diffHours > 20) {
-            if(ImportantCommunities.has(postView.community.name)) {
+          if (diffHours > 20) {
+            if (ImportantCommunities.has(postView.community.name)) {
               console.info("removing post:", postView.community.name, postView.post.name, postView.counts.upvotes);
               const created = botActions.createComment({post_id: postView.post.id, content: "The people have voted, and regretfully this post has been deemed `not important`. Better luck next time."})
               created.then(() =>
@@ -113,15 +127,15 @@ export const bestbot: BestBot = new BestBot({
         const publishedTimestamp = new Date(postView.post.published);
         const now = new Date();
         const anchor = 1680000000000
-        const scheduleMillis = Math.pow(((publishedTimestamp.getTime() - anchor) / (now.getTime() - anchor)), 64)*10000;
+        const scheduleMillis = Math.pow(((publishedTimestamp.getTime() - anchor) / (now.getTime() - anchor)), 64) * 10000;
         console.info("scheduling handler for:", postView.community.name, postView.post.name, "in", scheduleMillis / 1000, "seconds");
 
         const videoPostCallback = (err, resp) => {
-          if(err) {
+          if (err) {
             console.warn("errored! ", err);
             console.info("reprocessing:", postView.post.name, "in", BestBot.errorReprocessMinutes, "minutes");
             reprocess(BestBot.errorReprocessMinutes);
-          } else if(resp) {
+          } else if (resp) {
             console.info("Successfully added:", postView.post.name);
             // console.info("preventing reprocess:", postView.post.name);
             // preventReprocess();

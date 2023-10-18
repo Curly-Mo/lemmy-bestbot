@@ -15,8 +15,8 @@ const CommunityToPlaylistId: Map<string, string> = new Map(Object.entries({
   "bideos": "PLHwBlZp_DJfl2vj6hjEmbmT7LVk9YD0bX",
   // "sketchy": "PLHwBlZp_DJfkHuKW-XFJT4XEafTIRnRVQ",
   // "worksofart": "PLHwBlZp_DJfkC1gPkrRPtxGxeeYJAOCwh",
-  "aminals": "PLHwBlZp_DJfnndZCZdfyAwA9lNpxGO4v0",
-  "musicbideos": "PLHwBlZp_DJfnfMU7n5IT-8CfPRbJAyb-L",
+  // "aminals": "PLHwBlZp_DJfnndZCZdfyAwA9lNpxGO4v0",
+  // "musicbideos": "PLHwBlZp_DJfnfMU7n5IT-8CfPRbJAyb-L",
   // "norm": "PLHwBlZp_DJfkB6Tm-CKNe_IplzaMIXtYE",
   // "standup": "PLHwBlZp_DJflhO0ifYF1mXEAAal58-E0o",
   "mealtimevideos": "PLHwBlZp_DJfn_dCiWOFHIVY5SHf3iBF_D"
@@ -45,6 +45,7 @@ export class AlgorithmBot extends lemmybot.LemmyBot {
     return recsFuture
       .then(recs =>
         recs
+          .filter(rec => rec.rec.uploadDate == undefined || !rec.rec.uploadDate.includes("hour"))
           .filter(rec => rec.rec.uploadDate == undefined || !rec.rec.uploadDate.includes("day"))
           .filter(rec => rec.rec.uploadDate == undefined || !rec.rec.uploadDate.includes("weeks"))
           .filter(rec => rec.rec.viewCount > this.minViewCount)
@@ -74,10 +75,9 @@ export class AlgorithmBot extends lemmybot.LemmyBot {
             community_id: communityId,
             name: rec.rec.title,
             url: videoUrl,
-            body: `I am a bot, beep boop.  \nI think this video might fit in over at ${this.communityLink(community)}`,
+            body: `I am a bot, beep boop. I think this video might fit in over at ${this.communityLink(community)}`,
           });
         }
-        return;
       }
     });
   }
@@ -86,6 +86,7 @@ export class AlgorithmBot extends lemmybot.LemmyBot {
     const future = this.lemmyHttp.getPosts({
       community_name: community,
       sort: "New",
+      limit: 50,
     });
     return future.then(resp => resp.posts);
   }
@@ -123,7 +124,7 @@ export const algorithmbot: AlgorithmBot = new AlgorithmBot({
     // secondsBetweenPolls: 60
   },
   schedule: {
-    cronExpression: '0 0 9 * * *',
+    cronExpression: '0 0 9,10,11 * * *',
     timezone: 'America/New_York',
     doTask: (botActions) => {
       return AlgorithmBot.postRec(botActions);
