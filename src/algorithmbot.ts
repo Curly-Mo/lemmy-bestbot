@@ -2,7 +2,7 @@ import lemmybot from 'lemmy-bot';
 import {config} from 'dotenv';
 import {ScrapeTube, Recommendation} from './scrapetube.js';
 import {Youtube} from './youtube.js';
-import {LemmyHttp} from 'lemmy-js-client';
+import lemmyjs from 'lemmy-js-client';
 
 config();
 const {LEMMY_INSTANCE, LEMMY_ALGORITHM_USERNAME_OR_EMAIL, LEMMY_ALGORITHM_PASSWORD} =
@@ -51,7 +51,7 @@ export class AlgorithmBot extends lemmybot.LemmyBot {
       );
   }
 
-  public static async postRec(botActions: lemmybot.BotActions, lemmyHttp: LemmyHttp): Promise<void> {
+  public static async postRec(botActions: lemmybot.BotActions, lemmyHttp: lemmyjs.LemmyHttp): Promise<lemmyjs.PostResponse> {
     const community = this.chooseCommunity();
     const postsFuture = this.getPosts(BotPlaygroundCommunity, lemmyHttp);
     const recsFuture = this.getRecs(community);
@@ -81,7 +81,7 @@ export class AlgorithmBot extends lemmybot.LemmyBot {
     });
   }
 
-  public static async getPosts(community: string, lemmyHttp: LemmyHttp): Promise<lemmybot.PostView[]> {
+  public static async getPosts(community: string, lemmyHttp: lemmyjs.LemmyHttp): Promise<lemmybot.PostView[]> {
     const future = lemmyHttp.getPosts({
       community_name: community,
       sort: "New",
@@ -125,8 +125,9 @@ export const algorithmbot: AlgorithmBot = new AlgorithmBot({
   schedule: {
     cronExpression: '0 0 9,10,11 * * *',
     timezone: 'America/New_York',
-    doTask: (options: {botActions: lemmybot.BotActions; __httpClient__: LemmyHttp;}) => {
-      return AlgorithmBot.postRec(options.botActions, options.__httpClient__);
+    doTask: (options: {botActions: lemmybot.BotActions; __httpClient__: lemmyjs.LemmyHttp;}) => {
+      return AlgorithmBot.postRec(options.botActions, options.__httpClient__)
+        .then(_ => null);
     },
   },
   markAsBot: false,
