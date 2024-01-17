@@ -25,7 +25,6 @@ const CommunityToPlaylistId: Map<string, string> = new Map(Object.entries({
 export class AlgorithmBot extends lemmybot.LemmyBot {
   public static scrapetube: ScrapeTube = new ScrapeTube();
   public static youtube: Youtube = new Youtube();
-  public static lemmyHttp = new LemmyHttp(`https://${LEMMY_INSTANCE}`);
   public static minViewCount = 400000;
   constructor(botOptions: lemmybot.BotOptions) {
     super(botOptions);
@@ -52,9 +51,9 @@ export class AlgorithmBot extends lemmybot.LemmyBot {
       );
   }
 
-  public static async postRec(botActions: lemmybot.BotActions): Promise<void> {
+  public static async postRec(botActions: lemmybot.BotActions, lemmyHttp: LemmyHttp): Promise<void> {
     const community = this.chooseCommunity();
-    const postsFuture = this.getPosts(BotPlaygroundCommunity);
+    const postsFuture = this.getPosts(BotPlaygroundCommunity, lemmyHttp);
     const recsFuture = this.getRecs(community);
     return Promise.all([postsFuture, recsFuture]).then(results => {
       const posts = results[0];
@@ -82,8 +81,8 @@ export class AlgorithmBot extends lemmybot.LemmyBot {
     });
   }
 
-  public static async getPosts(community: string): Promise<lemmybot.PostView[]> {
-    const future = this.lemmyHttp.getPosts({
+  public static async getPosts(community: string, lemmyHttp: LemmyHttp): Promise<lemmybot.PostView[]> {
+    const future = lemmyHttp.getPosts({
       community_name: community,
       sort: "New",
       limit: 50,
@@ -126,8 +125,8 @@ export const algorithmbot: AlgorithmBot = new AlgorithmBot({
   schedule: {
     cronExpression: '0 0 9,10,11 * * *',
     timezone: 'America/New_York',
-    doTask: (botActions) => {
-      return AlgorithmBot.postRec(botActions);
+    doTask: (options: {botActions: lemmybot.BotActions; __httpClient__: LemmyHttp;}) => {
+      return AlgorithmBot.postRec(options.botActions, options.__httpClient__);
     },
   },
   markAsBot: false,
