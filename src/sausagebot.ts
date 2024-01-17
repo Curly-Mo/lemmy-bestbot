@@ -1,7 +1,7 @@
 import lemmybot from 'lemmy-bot';
 import { Youtube, SearchResult } from './youtube.js';
 import { config } from 'dotenv';
-import { LemmyHttp } from 'lemmy-js-client';
+import lemmyjs from 'lemmy-js-client';
 
 config();
 const { LEMMY_INSTANCE, LEMMY_SAUSAGE_USERNAME_OR_EMAIL, LEMMY_SAUSAGE_PASSWORD, SAUSAGE_COMMUNITY, SAUSAGE_CHANNEL_ID } =
@@ -9,7 +9,6 @@ const { LEMMY_INSTANCE, LEMMY_SAUSAGE_USERNAME_OR_EMAIL, LEMMY_SAUSAGE_PASSWORD,
 
 export class SausageBot extends lemmybot.LemmyBot {
   public static youtube: Youtube = new Youtube();
-  public static lemmyHttp = new LemmyHttp(`https://${LEMMY_INSTANCE}`);
   constructor(botOptions: lemmybot.BotOptions) {
     super(botOptions);
   }
@@ -18,8 +17,8 @@ export class SausageBot extends lemmybot.LemmyBot {
     SausageBot.youtube.authorize(() => super.start());
   }
 
-  public static async postSausages(botActions: lemmybot.BotActions): Promise<void> {
-    const postsFuture = this.getPosts(SAUSAGE_COMMUNITY);
+  public static async postSausages(botActions: lemmybot.BotActions, lemmyHttp: lemmyjs.LemmyHttp): Promise<lemmyjs.PostResponse> {
+    const postsFuture = this.getPosts(SAUSAGE_COMMUNITY, lemmyHttp);
     const videosFuture = this.getSausageVideos();
     return Promise.all([postsFuture, videosFuture]).then(results => {
       const posts = results[0];
@@ -56,8 +55,8 @@ export class SausageBot extends lemmybot.LemmyBot {
     });
   }
 
-  public static async getPosts(community: string): Promise<lemmybot.PostView[]> {
-    const future = this.lemmyHttp.getPosts({
+  public static async getPosts(community: string, lemmyHttp: lemmyjs.LemmyHttp): Promise<lemmybot.PostView[]> {
+    const future = lemmyHttp.getPosts({
       community_name: community,
       sort: "New",
     });
@@ -90,8 +89,9 @@ export const sausagebot: SausageBot = new SausageBot({
   schedule: {
     cronExpression: '0 25 * * * *',
     timezone: 'America/New_York',
-		doTask: (botActions) => {
-      return SausageBot.postSausages(botActions);
+		doTask: (options) => {
+      return SausageBot.postSausages(options.botActions, options.__httpClient__)
+        .then(_ => null);
 		},
   },
   markAsBot: false,

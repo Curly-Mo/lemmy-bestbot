@@ -103,7 +103,7 @@ export const bestbot: BestBot = new BestBot({
           return;
         }
         const minVotes = CommunityToMinVotes.has(postView.community.name) ? CommunityToMinVotes.get(postView.community.name) : 0;
-        if (postView.counts.upvotes < minVotes && !postView.creator.admin) {
+        if (postView.counts.upvotes < minVotes && !postView.creator_is_admin) {
           console.info("score too low:", postView.post.name, "; score:", postView.counts.score, "; upvotes:", postView.counts.upvotes);
           const now = Date.now();
           const published = Date.parse(postView.post.published);
