@@ -15,7 +15,8 @@ const CommunityToPlaylistId: Map<string, string> = new Map(Object.entries({
   "musicbideos": "PLHwBlZp_DJfnfMU7n5IT-8CfPRbJAyb-L",
   "norm": "PLHwBlZp_DJfkB6Tm-CKNe_IplzaMIXtYE",
   "standup": "PLHwBlZp_DJflhO0ifYF1mXEAAal58-E0o",
-  "mealtimevideos": "PLHwBlZp_DJfn_dCiWOFHIVY5SHf3iBF_D"
+  "mealtimevideos": "PLHwBlZp_DJfn_dCiWOFHIVY5SHf3iBF_D",
+  "memestalgia": "PLHwBlZp_DJfldRJ0DvLyeYzZVAUqT0ATF"
 }));
 
 const CommunityToMinVotes: Map<string, number> = new Map(Object.entries({
@@ -29,6 +30,7 @@ const CommunityToMinVotes: Map<string, number> = new Map(Object.entries({
   "norm": 10,
   "standup": 10,
   "mealtimevideos": 10,
+  "memestalgia": 10,
 }));
 
 const ImportantCommunities: Set<string> = new Set(["importantvideos", "importantimages", "sketchy", "worksofart"]);
