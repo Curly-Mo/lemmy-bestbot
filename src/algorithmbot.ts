@@ -13,13 +13,14 @@ const BotPlaygroundCommunity: string = "thealgorithm";
 const CommunityToPlaylistId: Map<string, string> = new Map(Object.entries({
   "importantvideos": "PLHwBlZp_DJfmuZceDJJsIVbal9JO_hteM",
   "bideos": "PLHwBlZp_DJfl2vj6hjEmbmT7LVk9YD0bX",
-  // "sketchy": "PLHwBlZp_DJfkHuKW-XFJT4XEafTIRnRVQ",
+  "sketchy": "PLHwBlZp_DJfkHuKW-XFJT4XEafTIRnRVQ",
   // "worksofart": "PLHwBlZp_DJfkC1gPkrRPtxGxeeYJAOCwh",
-  // "aminals": "PLHwBlZp_DJfnndZCZdfyAwA9lNpxGO4v0",
+  "aminals": "PLHwBlZp_DJfnndZCZdfyAwA9lNpxGO4v0",
   // "musicbideos": "PLHwBlZp_DJfnfMU7n5IT-8CfPRbJAyb-L",
-  // "norm": "PLHwBlZp_DJfkB6Tm-CKNe_IplzaMIXtYE",
-  // "standup": "PLHwBlZp_DJflhO0ifYF1mXEAAal58-E0o",
-  "mealtimevideos": "PLHwBlZp_DJfn_dCiWOFHIVY5SHf3iBF_D"
+  "norm": "PLHwBlZp_DJfkB6Tm-CKNe_IplzaMIXtYE",
+  "standup": "PLHwBlZp_DJflhO0ifYF1mXEAAal58-E0o",
+  "mealtimevideos": "PLHwBlZp_DJfn_dCiWOFHIVY5SHf3iBF_D",
+  "memestalgia": "PLHwBlZp_DJfldRJ0DvLyeYzZVAUqT0ATF",
 }));
 
 export class AlgorithmBot extends lemmybot.LemmyBot {
