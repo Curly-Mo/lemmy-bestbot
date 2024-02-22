@@ -3230,10 +3230,10 @@ kind-of@^6.0.2:
   resolved "https://registry.yarnpkg.com/kind-of/-/kind-of-6.0.3.tgz#07c05034a6c349fa06e24fa35aa76db4580ce4dd"
   integrity sha512-dcS1ul+9tmeD95T+x28/ehLgd9mENa3LsvDTtzm3vyBEO7RPptvAD+t44WVXaUjTBRcrpFeFlC8WCruUR456hw==
 
-lemmy-bot@^0.5.1:
-  version "0.5.2"
-  resolved "https://registry.yarnpkg.com/lemmy-bot/-/lemmy-bot-0.5.2.tgz#d4223fb19899bb1048bba1135faadbf8ff43042b"
-  integrity sha512-UcbrzjklazSQdW4HwPWjklzUx1Ff8sRhmr6UJOdpLnCYt8P0AdXtnz62bPFKalIGx7kPz8ueSjTQUozoZUjBAg==
+lemmy-bot@^0.6.1:
+  version "0.6.1"
+  resolved "https://registry.yarnpkg.com/lemmy-bot/-/lemmy-bot-0.6.1.tgz#8fcb227faa09148b8ed9509dbaa07db6367a4025"
+  integrity sha512-xg/W6+ErN+53M9PVGvYouy8/FYbWPpXJiJseqguWvWmkPJXvbe4Nw7QjfW3zgq3BRkq9RttG9VLB3kmTt/yyxA==
   dependencies:
     lemmy-js-client "0.19.3-alpha.6"
     node-cron "^3.0.3"
