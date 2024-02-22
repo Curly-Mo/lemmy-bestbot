@@ -77,8 +77,32 @@ export class AlgorithmBot extends lemmybot.LemmyBot {
             url: videoUrl,
             body: `I am a bot, beep boop. I think this video might fit in over at ${this.communityLink(community)}`,
           });
+          // .then(post => {
+          //   setTimeout(function() {
+          //     botActions.votePost({post_id: post.post_view.post.id, score: 0});
+          //   }, 10000);
+          //   return post;
+          // });
         }
       }
+    });
+  }
+
+  public static async cleanUpRecs(botActions: lemmybot.BotActions, lemmyHttp: lemmyjs.LemmyHttp): Promise<lemmyjs.PostResponse[]> {
+    const postsFuture = this.getPosts(BotPlaygroundCommunity, lemmyHttp);
+    return postsFuture.then(posts => {
+      return Promise.all(posts.filter(post => post.counts.score <= 0).map(badPost => {
+        console.info("Deleting", badPost.post.name, "from", BotPlaygroundCommunity);
+        return lemmyHttp.deletePost({
+          post_id: badPost.post.id,
+          deleted: true
+        });
+        // return botActions.removePost({
+        //   post_id: badPost.post.id,
+        //   removed: false,
+        //   reason: "Bad Recommendation"
+        // });
+      }));
     });
   }
 
@@ -123,13 +147,24 @@ export const algorithmbot: AlgorithmBot = new AlgorithmBot({
     // minutesUntilReprocess: 1,
     // secondsBetweenPolls: 60
   },
-  schedule: {
-    cronExpression: '0 0 9,10,11 * * *',
-    timezone: 'America/New_York',
-    doTask: (options: {botActions: lemmybot.BotActions; __httpClient__: lemmyjs.LemmyHttp;}) => {
-      return AlgorithmBot.postRec(options.botActions, options.__httpClient__)
-        .then(_ => null);
+  schedule: [
+    {
+      cronExpression: '0 0 9,10,11 * * *',
+      timezone: 'America/New_York',
+      doTask: (options: {botActions: lemmybot.BotActions; __httpClient__: lemmyjs.LemmyHttp;}) => {
+        return AlgorithmBot.postRec(options.botActions, options.__httpClient__)
+          // .then(post => options.botActions.votePost({post_id: post.post_view.post.id, score: 0}))
+          .then(_ => null);
+      },
     },
-  },
+    {
+      cronExpression: '0 0,30 * * * *',
+      timezone: 'America/New_York',
+      doTask: (options: {botActions: lemmybot.BotActions; __httpClient__: lemmyjs.LemmyHttp;}) => {
+        return AlgorithmBot.cleanUpRecs(options.botActions, options.__httpClient__)
+          .then(_ => null);
+      },
+    }
+  ],
   markAsBot: false,
 });
