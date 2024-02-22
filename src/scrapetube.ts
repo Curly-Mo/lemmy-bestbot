@@ -20,9 +20,11 @@ export class ScrapeTube {
     // console.info("playlist:", playlist);
     // console.info("items", playlist.videos.items);
     const videoFutures = playlist.videos.items.map(item => item.getVideo());
+    // console.info("videoFutures:", videoFutures);
     // const relatedFutures = videoFutures.map(future => future.then(this.getAllRelated));
     const relatedFutures = videoFutures.map(future =>
       future.then(video => this.getAllRelated(video as Video).then(related => {
+        // console.info("allRelated:", {video: video, related: related});
         return {video: video, related: related}
       }))
     );
@@ -70,6 +72,9 @@ export class ScrapeTube {
   // }
 
   public async getAllRelated(video: Video): Promise<VideoCompact[]> {
+    // console.log("video:", video);
+    // console.log("related:", video.related);
+    // console.log("next:", video.related.next(10));
     // return video.related.items.map(rel => rel as VideoCompact);
     return video.related.next(10)
       .then(items => video.related.items)
