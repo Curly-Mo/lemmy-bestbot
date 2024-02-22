@@ -116,7 +116,7 @@ export const bestbot: BestBot = new BestBot({
               console.info("removing post:", postView.community.name, postView.post.name, postView.counts.upvotes);
               const created = botActions.createComment({post_id: postView.post.id, content: "The people have voted, and regretfully this post has been deemed `not important`. Better luck next time."})
               created.then(() =>
-                botActions.removePost({post_id: postView.post.id, reason: "not important enough"})
+                botActions.removePost({post_id: postView.post.id, removed: true, reason: "not important enough"})
               );
             }
             console.info("no longer attempting to reprocess:", postView.community.name, postView.post.name);
