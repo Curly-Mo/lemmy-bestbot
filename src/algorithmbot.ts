@@ -91,18 +91,20 @@ export class AlgorithmBot extends lemmybot.LemmyBot {
   public static async cleanUpRecs(botActions: lemmybot.BotActions, lemmyHttp: lemmyjs.LemmyHttp): Promise<lemmyjs.PostResponse[]> {
     const postsFuture = this.getPosts(BotPlaygroundCommunity, lemmyHttp);
     return postsFuture.then(posts => {
-      return Promise.all(posts.filter(post => post.counts.score <= 0).map(badPost => {
-        console.info("Deleting", badPost.post.name, "from", BotPlaygroundCommunity);
-        return lemmyHttp.deletePost({
-          post_id: badPost.post.id,
-          deleted: true
-        });
-        // return botActions.removePost({
-        //   post_id: badPost.post.id,
-        //   removed: false,
-        //   reason: "Bad Recommendation"
-        // });
-      }));
+      return Promise.all(posts
+        .filter(post => !post.post.deleted)
+        .filter(post => post.counts.score <= 0).map(badPost => {
+          console.info("Deleting", badPost.post.name, "from", BotPlaygroundCommunity);
+          return lemmyHttp.deletePost({
+            post_id: badPost.post.id,
+            deleted: true
+          });
+          // return botActions.removePost({
+          //   post_id: badPost.post.id,
+          //   removed: false,
+          //   reason: "Bad Recommendation"
+          // });
+        }));
     });
   }
 
