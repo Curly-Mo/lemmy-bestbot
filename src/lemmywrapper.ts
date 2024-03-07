@@ -42,7 +42,7 @@ export class LemmyWrapper {
   }
 
   public async cleanUpRecs(client: lemmyjs.LemmyHttp, community: string, belowScore: number = 1): Promise<lemmyjs.PostResponse[]> {
-    const postsFuture = this.getPosts(community, client);
+    const postsFuture = this.getAllPosts(community, client);
     return postsFuture.then(posts => {
       return Promise.all(posts
         .filter(post => !post.post.deleted)
