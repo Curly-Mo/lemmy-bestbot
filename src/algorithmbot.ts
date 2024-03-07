@@ -126,7 +126,7 @@ export class AlgorithmBot extends lemmybot.LemmyBot {
           communityName,
           goodPost.post.name,
           goodPost.post.url,
-          `I am a bot, beep boop. I think this video might belong here at ${communityLink}  \nIf I've done goofed, just downvote this post and I will remove it and learn from my mistakes.`,
+          `I am a bot, beep boop. I think this video might belong here at ${communityLink}  \n\nIf I've done goofed, just downvote this post and I will remove it and learn from my mistakes.`,
         ).then(resp =>
           client.deletePost({
             post_id: goodPost.post.id,
