@@ -54,9 +54,9 @@ export class AlgorithmBot extends lemmybot.LemmyBot {
       );
   }
 
-  public static async postRec(botActions: lemmybot.BotActions, lemmyHttp: lemmyjs.LemmyHttp): Promise<lemmyjs.PostResponse> {
+  public static async postRec(botActions: lemmybot.BotActions, client: lemmyjs.LemmyHttp): Promise<lemmyjs.PostResponse> {
     const community = this.chooseCommunity();
-    const postsFuture = this.lemmyWrapper.getAllPosts(BotPlaygroundCommunity, lemmyHttp);
+    const postsFuture = this.lemmyWrapper.getAllPosts(BotPlaygroundCommunity, client);
     const recsFuture = this.getRecs(community);
     return Promise.all([postsFuture, recsFuture]).then(results => {
       const posts = results[0];
@@ -92,8 +92,48 @@ export class AlgorithmBot extends lemmybot.LemmyBot {
     });
   }
 
-  public static async cleanUpRecs(botActions: lemmybot.BotActions, lemmyHttp: lemmyjs.LemmyHttp): Promise<lemmyjs.PostResponse[]> {
-    return this.lemmyWrapper.cleanUpRecs(lemmyHttp, BotPlaygroundCommunity);
+  public static async processRecPosts(botActions: lemmybot.BotActions, client: lemmyjs.LemmyHttp): Promise<lemmyjs.PostResponse[]> {
+    const postsFuture = this.lemmyWrapper.getAllPosts(BotPlaygroundCommunity, client);
+    return postsFuture.then(async posts => {
+      const cleanupFuture = this.cleanUpRecs(client, posts)
+      const promoteFuture = this.promoteRecs(client, posts)
+      const responses = await Promise.all([cleanupFuture, promoteFuture]);
+      return responses.flat();
+    });
+  }
+
+  public static async cleanUpRecs(client: lemmyjs.LemmyHttp, posts: lemmyjs.PostView[], belowScore: number = 1): Promise<lemmyjs.PostResponse[]> {
+    return Promise.all(posts
+      .filter(post => !post.post.deleted)
+      .filter(post => post.counts.score < belowScore).map(badPost => {
+        console.info("Deleting", badPost.post.name, "from", badPost.community.name);
+        return client.deletePost({
+          post_id: badPost.post.id,
+          deleted: true
+        });
+      }));
+  }
+
+  public static async promoteRecs(client: lemmyjs.LemmyHttp, posts: lemmyjs.PostView[], aboveScore: number = 1): Promise<lemmyjs.PostResponse[]> {
+    return Promise.all(posts
+      .filter(post => !post.post.deleted)
+      .filter(post => post.counts.score > aboveScore).map(goodPost => {
+        const communityLink = this.extractCommunityLink(goodPost.post.body);
+        const communityName = this.extractCommunityName(goodPost.post.body);
+        console.info("Promoting", goodPost.post.name, "from", goodPost.community.name, "to", communityLink);
+        return this.lemmyWrapper.createPost(
+          client,
+          communityName,
+          goodPost.post.name,
+          goodPost.post.url,
+          `I am a bot, beep boop. I think this video might belong here at ${communityLink}  \nIf I've done goofed, just downvote this post and I will remove it and learn from my mistakes.`,
+        ).then(resp =>
+          client.deletePost({
+            post_id: goodPost.post.id,
+            deleted: true
+          })
+        );
+      }));
   }
 
   public static communityLink(communityName: string): string {
@@ -103,6 +143,18 @@ export class AlgorithmBot extends lemmybot.LemmyBot {
   public static chooseCommunity(): string {
     const communities = Array.from(CommunityToPlaylistId.keys());
     return communities[Math.floor(Math.random() * communities.length)];
+  }
+
+  public static extractCommunityLink(text: string): string {
+    const matches = text.match(/.*(\!\w+\@(\w+\.\w+)+).*/);
+    // console.log("matches:", matches);
+    return matches[1];
+  }
+
+  public static extractCommunityName(text: string): string {
+    const matches = text.match(/.*\!(\w+)\@(\w+\.\w+)+.*/);
+    // console.log("nameMatches:", matches);
+    return matches[1];
   }
 
 }
@@ -142,7 +194,7 @@ export const algorithmbot: AlgorithmBot = new AlgorithmBot({
       cronExpression: '0 0,30 * * * *',
       timezone: 'America/New_York',
       doTask: (options: {botActions: lemmybot.BotActions; __httpClient__: lemmyjs.LemmyHttp;}) => {
-        return AlgorithmBot.cleanUpRecs(options.botActions, options.__httpClient__)
+        return AlgorithmBot.processRecPosts(options.botActions, options.__httpClient__)
           .then(_ => null);
       },
     }
