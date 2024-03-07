@@ -1,6 +1,7 @@
 import lemmybot from 'lemmy-bot';
 import {config} from 'dotenv';
 import {ScrapeTube, Recommendation} from './scrapetube.js';
+import {LemmyWrapper} from './lemmywrapper.js';
 import {Youtube} from './youtube.js';
 import lemmyjs from 'lemmy-js-client';
 
@@ -26,6 +27,7 @@ const CommunityToPlaylistId: Map<string, string> = new Map(Object.entries({
 export class AlgorithmBot extends lemmybot.LemmyBot {
   public static scrapetube: ScrapeTube = new ScrapeTube();
   public static youtube: Youtube = new Youtube();
+  public static lemmyWrapper: LemmyWrapper = new LemmyWrapper();
   public static minViewCount = 400000;
   constructor(botOptions: lemmybot.BotOptions) {
     super(botOptions);
@@ -54,11 +56,13 @@ export class AlgorithmBot extends lemmybot.LemmyBot {
 
   public static async postRec(botActions: lemmybot.BotActions, lemmyHttp: lemmyjs.LemmyHttp): Promise<lemmyjs.PostResponse> {
     const community = this.chooseCommunity();
-    const postsFuture = this.getPosts(BotPlaygroundCommunity, lemmyHttp);
+    const postsFuture = this.lemmyWrapper.getAllPosts(BotPlaygroundCommunity, lemmyHttp);
     const recsFuture = this.getRecs(community);
     return Promise.all([postsFuture, recsFuture]).then(results => {
       const posts = results[0];
       const recs = results[1];
+      // console.log("POSTS:", posts.length);
+      // console.log("RECS:", recs.length);
       // console.log("POSTS:", posts);
       // console.log("RECS:", recs);
       const postVideoIds = new Set(posts.map(postView => postView.post).filter(post => this.youtube.isYoutubeUrl(post.url)).map(post => this.youtube.extractVideoId(post.url)));
@@ -89,32 +93,7 @@ export class AlgorithmBot extends lemmybot.LemmyBot {
   }
 
   public static async cleanUpRecs(botActions: lemmybot.BotActions, lemmyHttp: lemmyjs.LemmyHttp): Promise<lemmyjs.PostResponse[]> {
-    const postsFuture = this.getPosts(BotPlaygroundCommunity, lemmyHttp);
-    return postsFuture.then(posts => {
-      return Promise.all(posts
-        .filter(post => !post.post.deleted)
-        .filter(post => post.counts.score <= 0).map(badPost => {
-          console.info("Deleting", badPost.post.name, "from", BotPlaygroundCommunity);
-          return lemmyHttp.deletePost({
-            post_id: badPost.post.id,
-            deleted: true
-          });
-          // return botActions.removePost({
-          //   post_id: badPost.post.id,
-          //   removed: false,
-          //   reason: "Bad Recommendation"
-          // });
-        }));
-    });
-  }
-
-  public static async getPosts(community: string, lemmyHttp: lemmyjs.LemmyHttp): Promise<lemmybot.PostView[]> {
-    const future = lemmyHttp.getPosts({
-      community_name: community,
-      sort: "New",
-      limit: 50,
-    });
-    return future.then(resp => resp.posts);
+    return this.lemmyWrapper.cleanUpRecs(lemmyHttp, BotPlaygroundCommunity);
   }
 
   public static communityLink(communityName: string): string {
