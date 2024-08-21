@@ -183,7 +183,7 @@ export const algorithmbot: AlgorithmBot = new AlgorithmBot({
   },
   schedule: [
     {
-      cronExpression: '0 13 9 * * *',
+      cronExpression: '0 13 9,10 * * *',
       timezone: 'America/New_York',
       doTask: (options: {botActions: lemmybot.BotActions; __httpClient__: lemmyjs.LemmyHttp;}) => {
         return AlgorithmBot.postRec(options.botActions, options.__httpClient__)
