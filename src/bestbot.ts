@@ -16,7 +16,8 @@ const CommunityToPlaylistId: Map<string, string> = new Map(Object.entries({
   "norm": "PLHwBlZp_DJfkB6Tm-CKNe_IplzaMIXtYE",
   "standup": "PLHwBlZp_DJflhO0ifYF1mXEAAal58-E0o",
   "mealtimevideos": "PLHwBlZp_DJfn_dCiWOFHIVY5SHf3iBF_D",
-  "memestalgia": "PLHwBlZp_DJfldRJ0DvLyeYzZVAUqT0ATF"
+  "memestalgia": "PLHwBlZp_DJfldRJ0DvLyeYzZVAUqT0ATF",
+  "panelshow": "PLHwBlZp_DJflkEDf33bF7g_pxZD2JWEOF",
 }));
 
 const CommunityToMinVotes: Map<string, number> = new Map(Object.entries({
@@ -31,9 +32,10 @@ const CommunityToMinVotes: Map<string, number> = new Map(Object.entries({
   "standup": 10,
   "mealtimevideos": 10,
   "memestalgia": 10,
+  "panelshow": 10,
 }));
 
-const ImportantCommunities: Set<string> = new Set(["importantvideos", "importantimages", "sketchy", "worksofart"]);
+const ImportantCommunities: Set<string> = new Set(["importantvideos", "importantimages", "sketchy", "worksofart", "memestalgia"]);
 
 export class BestBot extends lemmybot.LemmyBot {
   public static youtube: Youtube = new Youtube();

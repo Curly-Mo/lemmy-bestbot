@@ -15,13 +15,14 @@ const CommunityToPlaylistId: Map<string, string> = new Map(Object.entries({
   "importantvideos": "PLHwBlZp_DJfmuZceDJJsIVbal9JO_hteM",
   "bideos": "PLHwBlZp_DJfl2vj6hjEmbmT7LVk9YD0bX",
   "sketchy": "PLHwBlZp_DJfkHuKW-XFJT4XEafTIRnRVQ",
-  // "worksofart": "PLHwBlZp_DJfkC1gPkrRPtxGxeeYJAOCwh",
+  "worksofart": "PLHwBlZp_DJfkC1gPkrRPtxGxeeYJAOCwh",
   "aminals": "PLHwBlZp_DJfnndZCZdfyAwA9lNpxGO4v0",
-  // "musicbideos": "PLHwBlZp_DJfnfMU7n5IT-8CfPRbJAyb-L",
+  "musicbideos": "PLHwBlZp_DJfnfMU7n5IT-8CfPRbJAyb-L",
   "norm": "PLHwBlZp_DJfkB6Tm-CKNe_IplzaMIXtYE",
   "standup": "PLHwBlZp_DJflhO0ifYF1mXEAAal58-E0o",
   "mealtimevideos": "PLHwBlZp_DJfn_dCiWOFHIVY5SHf3iBF_D",
   "memestalgia": "PLHwBlZp_DJfldRJ0DvLyeYzZVAUqT0ATF",
+  "panelshow": "PLHwBlZp_DJflkEDf33bF7g_pxZD2JWEOF",
 }));
 
 export class AlgorithmBot extends lemmybot.LemmyBot {
@@ -182,7 +183,7 @@ export const algorithmbot: AlgorithmBot = new AlgorithmBot({
   },
   schedule: [
     {
-      cronExpression: '0 0 9,10,11 * * *',
+      cronExpression: '0 13 9,10 * * *',
       timezone: 'America/New_York',
       doTask: (options: {botActions: lemmybot.BotActions; __httpClient__: lemmyjs.LemmyHttp;}) => {
         return AlgorithmBot.postRec(options.botActions, options.__httpClient__)
