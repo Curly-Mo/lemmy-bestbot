@@ -21,18 +21,18 @@ const CommunityToPlaylistId: Map<string, string> = new Map(Object.entries({
 }));
 
 const CommunityToMinVotes: Map<string, number> = new Map(Object.entries({
-  "importantvideos": 10,
+  "importantvideos": 6,
   "importantimages": 25,
   "sketchy": 5,
   "worksofart": 5,
-  "bideos": 10,
-  "aminals": 10,
-  "musicbideos": 10,
-  "norm": 10,
-  "standup": 10,
-  "mealtimevideos": 10,
-  "memestalgia": 10,
-  "panelshow": 10,
+  "bideos": 4,
+  "aminals": 4,
+  "musicbideos": 4,
+  "norm": 4,
+  "standup": 4,
+  "mealtimevideos": 4,
+  "memestalgia": 4,
+  "panelshow": 3,
 }));
 
 const ImportantCommunities: Set<string> = new Set(["importantvideos", "importantimages", "sketchy", "worksofart", "memestalgia"]);
