@@ -78,6 +78,11 @@ export class Youtube {
     return `https://youtube.com/watch?v=${videoId}`;
   }
 
+  /** Build a youtube thumbnail url from a videoId */
+  buildThumbnailUrl(videoId: string): string {
+    return `https://i.ytimg.com/vi/${videoId}/maxresdefault.jpg`;
+  }
+
   // TODO: create a more robust version of this method
   // /** check if the url is a youtube video **/
   // isYoutubeUrl(url: string): boolean {

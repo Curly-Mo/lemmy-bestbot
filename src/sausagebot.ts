@@ -29,12 +29,15 @@ export class SausageBot extends lemmybot.LemmyBot {
         const repost = postVideoIds.has(video.id.videoId);
         if(!repost) {
           const videoUrl = this.youtube.buildVideoUrl(video.id.videoId);
+          const thumbnailUrl = this.youtube.buildThumbnailUrl(video.id.videoId);
           console.info("Posting", video.snippet.title, videoUrl, "to", SAUSAGE_COMMUNITY);
           return botActions.createPost({
             community_id: communityId,
             name: video.snippet.title,
             url: videoUrl,
             body: `Mr. Sausage makes ordinary ${video.snippet.title}`,
+            // TODO: manually set thumbnail until lemmy properly handles previews
+            custom_thumbnail: thumbnailUrl,
           });
         }
         return;
